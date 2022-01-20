@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="metric_definition">
+    <metric_definition action="INSERT_OR_UPDATE">
+        <active>true</active>
+        <description>Only records the time worked my the fulfiller, From new to Resolve and the reopened time to resolve time.</description>
+        <field>state</field>
+        <name>Custom - Create to Resolve Duration</name>
+        <number>MTRC0010006</number>
+        <order>10</order>
+        <script><![CDATA[// variables available
+// current: GlideRecord -  target incident
+// definition: GlideRecord -  (this row)
+var s = current.state;
+//if (s == 6 || (s == 7 && current.active == false))
+if (s == 6)
+	createMetric();
+function createMetric() {
+	var mi = new MetricInstance(definition, current);
+	var startTime ='';
+	if (mi.metricExists()) 
+		startTime = getLastResolvedEndTime(current.sys_id);
+	else
+		startTime = current.sys_created_on
+
+	var gr = mi.getNewRecord();
+	gr.start = startTime;
+	gr.end = current.sys_updated_on;
+	gr.duration = gs.dateDiff(gr.start.getDisplayValue(), gr.end.getDisplayValue());
+	gr.calculation_complete = true;
+	gr.insert();
+}
+function getLastResolvedEndTime(id){
+	//gs.log("MT ID : "+id);
+	var mt = new GlideRecord("metric_instance");
+	var mtDefinition = '35f2b283c0a808ae000b7132cd0a4f55';
+	var sys_id = id;
+	var endTime = '';
+	mt.addEncodedQuery('id='+sys_id+'^definition='+mtDefinition+'^calculation_complete=true^value=Resolved');
+	mt.query();
+	if(mt.next())
+		endTime = mt.end;
+	//gs.log("MT END : "+endTime);
+	return endTime;
+}]]></script>
+        <sys_class_name>metric_definition</sys_class_name>
+        <sys_created_by>svraja</sys_created_by>
+        <sys_created_on>2022-01-20 14:19:40</sys_created_on>
+        <sys_id>ddfef82707410110df81ff808c1ed03b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Custom - Create to Resolve Duration</sys_name>
+        <sys_package display_value="MySnow" source="7cc1346707010110df81ff808c1ed0e6">7cc1346707010110df81ff808c1ed0e6</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="MySnow">7cc1346707010110df81ff808c1ed0e6</sys_scope>
+        <sys_update_name>metric_definition_ddfef82707410110df81ff808c1ed03b</sys_update_name>
+        <sys_updated_by>svraja</sys_updated_by>
+        <sys_updated_on>2022-01-20 14:19:40</sys_updated_on>
+        <table>incident</table>
+        <timeline>false</timeline>
+        <type>calculation</type>
+    </metric_definition>
+</record_update>

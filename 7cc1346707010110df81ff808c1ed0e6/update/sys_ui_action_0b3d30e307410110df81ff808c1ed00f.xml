@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="sys_ui_action">
+    <sys_ui_action action="INSERT_OR_UPDATE">
+        <action_name>u_fpc_add_records_to_update_set</action_name>
+        <active>true</active>
+        <client>true</client>
+        <client_script_v2/>
+        <comments>Written by Jim Coyne - https://community.servicenow.com/people/jim.coyne
+
+Adds the selected record(s) to the current Update Set.  Uses the "u_add_records_to_update_set_dialog" UI Page to actually do the processing, if the user confirms the operation.
+
+Useful for adding a new integration User or a Group record, etc… into an Update Set instead of exporting to XML and then importing it into another instance.  Or forgetting the record altogether.   :-(</comments>
+        <condition>gs.hasRole("admin") &amp;&amp; current.getTableName().indexOf("sys_update_") == -1 &amp;&amp; current.getTableName() != "sys_remote_update_set" &amp;&amp; current.getTableName().indexOf("sys_upgrade_") == -1</condition>
+        <form_action>true</form_action>
+        <form_button>false</form_button>
+        <form_button_v2>false</form_button_v2>
+        <form_context_menu>true</form_context_menu>
+        <form_link>false</form_link>
+        <form_menu_button_v2>false</form_menu_button_v2>
+        <form_style/>
+        <hint/>
+        <isolate_script>true</isolate_script>
+        <list_action>true</list_action>
+        <list_banner_button>false</list_banner_button>
+        <list_button>false</list_button>
+        <list_choice>true</list_choice>
+        <list_context_menu>true</list_context_menu>
+        <list_link>false</list_link>
+        <list_save_with_form_button>false</list_save_with_form_button>
+        <list_style/>
+        <messages/>
+        <name>Add Record(s) to Update Set</name>
+        <onclick>u_fpcAddRecordsToUpdateSet()</onclick>
+        <order>100000</order>
+        <script><![CDATA[function u_fpcAddRecordsToUpdateSet() {
+	var tableName = "";
+	var sysIds = "";
+	var msg = "This will add the current record to the";
+	//is this from a list or form view?
+	try{
+		sysIds = g_list.getChecked(); //comma separated list of sys_ids
+		if (sysIds == ""){
+			sysIds = g_sysId;
+		}
+		tableName = g_list.getTableName();
+		var sysIdArray = sysIds.split(",");
+		var numberOfRecords = sysIdArray.length + " record";
+		if (sysIdArray.length != 1){
+			numberOfRecords = numberOfRecords + "s";
+		}
+		msg = "This will add " + numberOfRecords + " to the ";
+	} catch(err) {
+		sysIds = g_form.getUniqueValue();
+		tableName = g_form.getTableName();
+	}
+
+	var dialogClass = window.GlideModal ? GlideModal : GlideDialogWindow;
+	var dd = new dialogClass("u_fpc_add_records_to_update_set_dialog");
+	dd.setTitle(new GwtMessage().getMessage("Confirmation"));
+	dd.setPreference("sysparm_message", msg);
+	dd.setPreference("sysparm_sys_id", sysIds);
+	dd.setPreference("sysparm_table", tableName);
+	dd.setWidth(500);
+	dd.render();
+}]]></script>
+        <show_insert>false</show_insert>
+        <show_multiple_update>false</show_multiple_update>
+        <show_query>false</show_query>
+        <show_update>true</show_update>
+        <sys_class_name>sys_ui_action</sys_class_name>
+        <sys_created_by>svraja</sys_created_by>
+        <sys_created_on>2022-01-20 14:12:08</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>0b3d30e307410110df81ff808c1ed00f</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Add Record(s) to Update Set</sys_name>
+        <sys_overrides/>
+        <sys_package display_value="MySnow" source="7cc1346707010110df81ff808c1ed0e6">7cc1346707010110df81ff808c1ed0e6</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="MySnow">7cc1346707010110df81ff808c1ed0e6</sys_scope>
+        <sys_update_name>sys_ui_action_0b3d30e307410110df81ff808c1ed00f</sys_update_name>
+        <sys_updated_by>svraja</sys_updated_by>
+        <sys_updated_on>2022-01-20 14:12:08</sys_updated_on>
+        <table>global</table>
+        <ui11_compatible>false</ui11_compatible>
+        <ui16_compatible>false</ui16_compatible>
+    </sys_ui_action>
+</record_update>
